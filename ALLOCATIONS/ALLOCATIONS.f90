@@ -6,8 +6,10 @@ subroutine alloc (index)
       use modsolver
       use modtapes
       use modtim
-      
+      use modMPIvar
+
       implicit none
+      
       integer :: index,M_INTEGER,M_REAL,teste1,teste2, iostatus
       REAL*8  :: XVALUE
      
@@ -16,30 +18,53 @@ subroutine alloc (index)
      !*****************************************************************	 
           
           M_REAL = 0
-          
-          allocate (found  (ngl+1,NUMNP  ));                found(:,:) = .false. 
-          allocate (Fno    (NUMNP,NGL+1,2));                Fno(:,:,:) = 0.d0 
-          allocate (id        (ngl,numnp  ));                   id(:,:) = 0
-          allocate (incid     (nume,nnoel));                incid(:,:) = 0 
-          allocate (mtype           (nume));                  mtype(:) = 0 
-          allocate (lm           (nume,nd));                   lm(:,:) = 0
-          allocate (x              (numnp));                      x(:) = 0.d0 
-          allocate (y              (numnp));                      y(:) = 0.d0 
-          allocate (z              (numnp));                      z(:) = 0.d0  
-          allocate (xi             (numnp));                      x(:) = 0.d0 
-          allocate (yi             (numnp));                      y(:) = 0.d0 
-          allocate (zi             (numnp));                      z(:) = 0.d0
+
+          numnpi = (numnp/numprocs)*myID+1
+          numnp_proc = (numnp/numprocs)
+          if (myid .lt. mod(numnp,numprocs)) then
+                numnp_proc = numnp_proc + 1
+                numnpi = numnpi + mYID
+          else
+                numnpi = numnpi + mod(numnp,numprocs)
+          endif
+          numnpf = numnpi + numnp_proc -1
+
+          numei = (nume/numprocs)*myID+1
+          nume_proc = (nume/numprocs)
+          if (myid .lt. mod(nume,numprocs)) then
+                nume_proc = nume_proc + 1
+                numei = numei + mYID
+          else
+                numei = numei + mod(nume,numprocs)
+          endif
+          numef = numei + nume_proc -1
+
+          allocate (procsnp(0:numprocs)); procsnp(:) = 0
+          allocate (procsel(0:numprocs)); procsel(:) = 0
+
+          allocate (found  (ngl+1,numnpi:numnpf  ));                found(:,:) = .false.
+          allocate (Fno    (numnpi:numnpf,NGL+1,2));                Fno(:,:,:) = 0.d0
+          allocate (id        (ngl,numnpi:numnpf  ));                   id(:,:) = 0
+          allocate (incid     (numei:numef,nnoel));                incid(:,:) = 0
+          allocate (mtype           (numei:numef));                  mtype(:) = 0
+          allocate (lm           (numei:numef,nd));                   lm(:,:) = 0
+          allocate (x              (numnpi:numnpf));                      x(:) = 0.d0
+          allocate (y              (numnpi:numnpf));                      y(:) = 0.d0
+          allocate (z              (numnpi:numnpf));                      z(:) = 0.d0
+          allocate (xi             (numnpi:numnpf));                      x(:) = 0.d0
+          allocate (yi             (numnpi:numnpf));                      y(:) = 0.d0
+          allocate (zi             (numnpi:numnpf));                      z(:) = 0.d0
           allocate (prop   (nummat,ncprop));                 prop(:,:) = 0.d0
-          allocate (jdiag          (numnp));                  jdiag(:) = 0 
-          allocate (ip           (numnp+1));                     ip(:) = 0 
-          allocate (mask           (0:numnp));                   mask(:) = 0
-          allocate (xls            (numnp));                    xls(:) = 0
-          allocate (invp           (numnp));                   invp(:) = 0
-          allocate (lm_tetra     (nume,nd));             lm_tetra(:,:) = 0
-          allocate (lm_bar        (nume,6));               lm_bar(:,:) = 0   
+          allocate (jdiag          (numnpi:numnpf));                  jdiag(:) = 0
+          allocate (ip           (numnpi:numnpf+1));                     ip(:) = 0
+          allocate (mask           (numnpi:numnpf));                   mask(:) = 0
+          allocate (xls            (numnpi:numnpf));                    xls(:) = 0
+          allocate (invp           (numnpi:numnpf));                   invp(:) = 0
+          allocate (lm_tetra     (numei:numef,nd));             lm_tetra(:,:) = 0
+          allocate (lm_bar        (numei:numef,6));               lm_bar(:,:) = 0
           
-          M_INTEGER    = (NGL * NUMNP) + (nume * nnoel) + nume + (nume * nd)   
-          M_REAL       = (NUMNP * 3)   + (nummat * ncprop)    
+          M_INTEGER    = (NGL * numnp_proc) + (nume_proc * nnoel) + nume_proc + (nume_proc * nd)
+          M_REAL       = (numnp_proc * 3)   + (nummat * ncprop)
           
           CALL MEMORY (M_INTEGER,1,XVALUE)
           VALUE_MEM = XVALUE 

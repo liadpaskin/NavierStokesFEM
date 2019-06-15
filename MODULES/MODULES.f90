@@ -1,4 +1,20 @@
 !  **************** BEGIN MODVAR ****************
+module modMPIvar
+
+      implicit none
+      include 'mpif.h'
+
+        integer ::  numprocs, myid, numnp_proc, numnpi, numnpf, nume_proc, numei, numef, iroot, idebug,ierr
+        integer, allocatable :: procsnp(:), procsel(:)
+
+
+      logical ::    l_root, l_debug
+
+        integer, dimension (MPI_STATUS_SIZE) :: status
+
+ end module modMPIvar
+
+!  **************** BEGIN MODVAR ****************
 module modvar
 
 implicit none
@@ -16,7 +32,6 @@ implicit none
                     nbar         ,  neq_bar      ,  npoint       , &
                     nsize        ,&
                     neq_PHI          ,  neqp_PHI = 0    , nbody, nlinemax, elrefp
-
 
         
         real*8  ::  value_mem    ,  energy ,  etol , grav , areat , ud , Eyoung , fac_dp , xxx , ccc, refPressure

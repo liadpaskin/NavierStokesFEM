@@ -9,3 +9,10 @@
  2014  git checkout -b parallel   # Change working branch
  2016  git branch -m master serial       # Rename branches
  2019  git diff --stat serial parallel      # Differences between branches
+
+git clone https://github.com/liadpaskin/NavierStokesFEM.git
+git checkout parallel 
+git push NavierStokesFEM serial 
+git push NavierStokesFEM parallel
+rm -rf .git
+
