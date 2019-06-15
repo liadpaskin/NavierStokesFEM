@@ -1,0 +1,11 @@
+ 2001  git config --global user.name "Liad Paskin"
+ 2002  git config --global user.mail "liadpaskin@gmail.com"
+ 2003  git config --list
+ 2005  git init    # Create a local repository
+ 2010  git add .   # Add all source files recursively
+ 2011  git commit  
+ 2012  git diff              # Check differences to the repository
+ 2015  git branch -a           # List Branches
+ 2014  git checkout -b parallel   # Change working branch
+ 2016  git branch -m master serial       # Rename branches
+ 2019  git diff --stat serial parallel      # Differences between branches
